@@ -76,12 +76,7 @@ display: block;
 
 
     <div id = "main">
-        <div id="3d" style="display: none">
-            <div id="ghost" class="stack-top"></div>
-            <div id = "lower">WASD for movement. Shift = down. Space = up. E = sprint. Slack channel : #dcse-vr</div>
             <canvas id="my_canvas" width="800" height="400"></canvas>
-        </div>
-        <div id="noPointerLock" style="display: none">Your browser does not support pointerLock, which is required for the 3d Datacenter to work.</div>
     </div>
 
 
@@ -965,7 +960,7 @@ function generateScene() {
     // @ts-ignore
     //document.getElementById("loading").style.display = "none";
     // @ts-ignore
-    document.getElementById("3d").style.display = "block";
+    //document.getElementById("3d").style.display = "block";
     addEventListeners();
     addThreeJsContent();
     rackEnvironmentFilter(rackDesign);
@@ -1289,7 +1284,7 @@ function addEventListeners() {
     // @ts-ignore
     //document.getElementById('hardwareFilter').addEventListener('change', changeColor, false);
     // @ts-ignore
-    document.getElementById('ghost').addEventListener('click', pointerLockRequest, false);
+    //document.getElementById('ghost').addEventListener('click', pointerLockRequest, false);
     // @ts-ignore
     //document.getElementById("speed").addEventListener("change", function () {
     //    // @ts-ignore
@@ -1421,45 +1416,20 @@ function rendererResize() {
     pageheight = window.innerHeight;
     canvasWidth = pagewidth - 16;
     canvasHeight = pageheight - 16;
-    topHeight = 90;
-    lowerHeight = 20;
-    centerHeight = canvasHeight - topHeight - lowerHeight;
     // center divs
     // @ts-ignore
     divElement = document.getElementById("my_canvas");
     divElement.style.position = 'absolute';
     divElement.style.left = "0px";
-    divElement.style.top = topHeight + "px";
+    divElement.style.top = "0px";
     divElement.style.width = canvasWidth + "px";
-    divElement.style.height = centerHeight + "px";
-    // @ts-ignore
-    divElement = document.getElementById("ghost");
-    divElement.style.position = 'absolute';
-    divElement.style.left = "0px";
-    divElement.style.top = topHeight + "px";
-    divElement.style.width = canvasWidth + "px";
-    divElement.style.height = centerHeight + "px";
-    // lower div
-    // @ts-ignore
-    divElement = document.getElementById("lower");
-    divElement.style.position = 'absolute';
-    divElement.style.left = "0px";
-    divElement.style.top = topHeight + centerHeight + "px";
-    divElement.style.width = canvasWidth + "px";
-    divElement.style.height = lowerHeight + "px";
+    divElement.style.height = canvasHeight + "px";
     // @ts-ignore
     //divElement = document.getElementById("loading");
-    left = (pagewidth / 2) - 60;
-    top = (pageheight / 2) - 60;
-    divElement.style.position = 'absolute';
-    divElement.style.left = left + "px";
-    divElement.style.top = top + "px";
-    divElement.style.width = "120px";
-    divElement.style.height = "120px";
     if (camera) {
-        camera.aspect = canvasWidth / centerHeight;
+        camera.aspect = canvasWidth / canvasHeight;
         camera.updateProjectionMatrix();
-        renderer.setSize(canvasWidth, centerHeight);
+        renderer.setSize(canvasWidth, canvasHeight);
     }
 }
 //}
