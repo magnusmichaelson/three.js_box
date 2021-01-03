@@ -8,11 +8,7 @@
  <canvas id="my_canvas" width="800" height="400"></canvas>
 <script src="./dependencies/three.min.js"></script>
 <script src="./dependencies/PointerLockControls.js"></script>
-<script src="./testData.js"></script>
 <script>
-
-//function main(spUtil){
-// global variables
 var camera;
 var controls;
 var controlsEnabled = false;
@@ -31,55 +27,10 @@ var serverLink;
 var speed = 6;
 var speedBoost = false;
 var velocity;
-// data from server
-var ciColor = {};
-var ciComment = {};
-var emptyBasic = {};
-var emptyToRack = {};
-var hardwareBasic = {};
-var hardwareError = {};
-var powerIqFinalData = {};
-var rackBasic = {};
-var rackCartesian = {};
-var rackColor = {};
-var rackComment = {};
-var rackDesign = {};
-var rackEmpty = {};
-var rackHardware = {};
-var rackSysIdValid = {};
-var roomName;
-var roomPowerMaximum;
-var roomSysid;
-// colors
-var defaultColorEmpty = { "red": 0.0, "green": 0.0, "blue": 0.0 };
-var defaultColorUnselectedRack = { "red": 0.4, "green": 0.4, "blue": 0.4 };
-var defaultColorHardRed = { "red": 1.0, "green": 0.0, "blue": 0.0 };
-var defaultColorHardware = { "red": 0.8, "green": 0.8, "blue": 0.8 };
-var defaultColorRack = { "red": 1.0, "green": 1.0, "blue": 1.0 };
 rendererResize();
-// @ts-ignore
 window.addEventListener("resize", rendererResize, false);
-var allData = fakeData();
-ciColor = allData["ciColor"];
-ciComment = allData["ciComment"];
-emptyBasic = allData["emptyBasic"];
-emptyToRack = allData["emptyToRack"];
-hardwareBasic = allData["hardwareBasic"];
-hardwareError = allData["hardwareError"];
-rackBasic = allData["rackBasic"];
-rackCartesian = allData["rackCartesian"];
-rackColor = allData["rackColor"];
-rackComment = allData["rackComment"];
-rackDesign = allData["rackDesign"];
-rackEmpty = allData["rackEmpty"];
-rackHardware = allData["rackHardware"];
-rackSysIdValid = allData["rackSysIdValid"];
-roomName = allData["roomName"];
-roomSysid = allData["roomSysid"];
-checkForPointerLock();
-///////////
-// menus //
-///////////
+start();
+
 function mouseClick(event) {
     if (event.button == 0) {
         mouseLeftClick();
@@ -100,156 +51,7 @@ function mouseMiddleClick() {
 function mouseRightClick() {
     console.log(objectInLineOfSightCurrent);
 }
-///////////////////////////
-// visualization control //
-///////////////////////////
-/////////////////////////////////////
-// recoloring objects in the scene //
-/////////////////////////////////////
-function changeColor() {
-    var rackChosen;
-    Object.keys(rackSysIdValid).forEach(function (rackSysid) {
-        rackChosen = checkrackChosen(rackSysid);
-        colorRack(rackSysid, rackChosen);
-        rackHardware[rackSysid].forEach(function (hardwareSysid) {
-            colorHardware(rackChosen, hardwareSysid);
-        });
-        rackEmpty[rackSysid].forEach(function (emptyId) {
-            colorEmpty(rackChosen, emptyId);
-        });
-    });
-}
-function checkrackChosen(rackSysid) {
-    var rackChosen;
-    rackChosen = true;
-}
-function colorRack(rackSysid, rackChosen) {
-    var color;
-    var rackToColor;
-    color = { "red": 0.0, "green": 0.0, "blue": 0.0 };
-    color["red"] = defaultColorUnselectedRack["red"];
-    color["green"] = defaultColorUnselectedRack["green"];
-    color["blue"] = defaultColorUnselectedRack["blue"];
-    if (rackChosen) {
-        color["red"] = rackColor[rackSysid]["red"];
-        color["green"] = rackColor[rackSysid]["green"];
-        color["blue"] = rackColor[rackSysid]["blue"];
-    }
-    rackToColor = scene.getObjectByName("rack_" + rackSysid);
-    if (rackToColor) {
-        rackToColor.material.color.setRGB(color["red"], color["green"], color["blue"]);
-    }
-}
-function colorHardware(rackChosen, hardwareSysid) {
-    var ciSysId;
-    var color;
-    var hardwareFilterValue;
-    var hardwareOverlayValue;
-    var hardwareToColor;
-    var highlightable;
-    var highlightColor;
-    highlightable = false;
-    hardwareToColor = scene.getObjectByName("hardware_" + hardwareSysid);
-    if (hardwareToColor) {
-        // @ts-ignore
-        //hardwareOverlayValue = document.getElementById('hardwareOverlay').value;
-        // @ts-ignore
-        //hardwareFilterValue = document.getElementById('hardwareFilter').value;
-        // @ts-ignore
-        hardwareOverlayValue = "default";
-        // @ts-ignore
-        hardwareFilterValue = "all";
-        highlightable = false;
-        color = { "red": 0.0, "green": 0.0, "blue": 0.0 };
-        highlightColor = { "red": 0.0, "green": 0.0, "blue": 0.0 };
-        color["red"] = defaultColorUnselectedRack["red"];
-        color["green"] = defaultColorUnselectedRack["green"];
-        color["blue"] = defaultColorUnselectedRack["blue"];
-        highlightColor["red"] = defaultColorUnselectedRack["red"];
-        highlightColor["green"] = defaultColorUnselectedRack["green"];
-        highlightColor["blue"] = defaultColorUnselectedRack["blue"];
-        if (rackChosen) {
-            if (hardwareFilterValue == 'all' || hardwareFilterValue == hardwareBasic[hardwareSysid]["supportgroup_name"]) {
-                color["red"] = defaultColorHardware["red"];
-                color["green"] = defaultColorHardware["green"];
-                color["blue"] = defaultColorHardware["blue"];
-                highlightColor["red"] = defaultColorHardware["red"];
-                highlightColor["green"] = defaultColorHardware["green"];
-                highlightColor["blue"] = defaultColorHardware["blue"];
-                if (hardwareError[hardwareSysid]) {
-                    if (hardwareOverlayValue == 'default') {
-                        color["red"] = defaultColorHardRed["red"];
-                        color["green"] = defaultColorHardRed["green"];
-                        color["blue"] = defaultColorHardRed["blue"];
-                        highlightColor["red"] = defaultColorHardRed["red"];
-                        highlightColor["green"] = defaultColorHardRed["green"];
-                        highlightColor["blue"] = defaultColorHardRed["blue"];
-                    }
-                    else {
-                        color["red"] = defaultColorUnselectedRack["red"];
-                        color["green"] = defaultColorUnselectedRack["green"];
-                        color["blue"] = defaultColorUnselectedRack["blue"];
-                        highlightColor["red"] = defaultColorUnselectedRack["red"];
-                        highlightColor["green"] = defaultColorUnselectedRack["green"];
-                        highlightColor["blue"] = defaultColorUnselectedRack["blue"];
-                    }
-                }
-                ciSysId = hardwareToColor.userData.ciSysId;
-                if (ciSysId) {
-                    if (ciColor.hasOwnProperty(ciSysId)) {
-                        color["red"] = ciColor[ciSysId]["red"];
-                        color["green"] = ciColor[ciSysId]["green"];
-                        color["blue"] = ciColor[ciSysId]["blue"];
-                        highlightColor["red"] = ciColor[ciSysId]["red"] * 0.6;
-                        highlightColor["green"] = ciColor[ciSysId]["green"] * 0.6;
-                        highlightColor["blue"] = ciColor[ciSysId]["blue"] * 0.6;
-                        highlightable = true;
-                    }
-                }
-            }
-        }
-        else {
-            color["red"] = defaultColorUnselectedRack["red"];
-            color["green"] = defaultColorUnselectedRack["green"];
-            color["blue"] = defaultColorUnselectedRack["blue"];
-            highlightColor["red"] = defaultColorUnselectedRack["red"];
-            highlightColor["green"] = defaultColorUnselectedRack["green"];
-            highlightColor["blue"] = defaultColorUnselectedRack["blue"];
-        }
-        hardwareToColor.material.color.setRGB(color["red"], color["green"], color["blue"]);
-        hardwareToColor.userData.colorRed = color["red"];
-        hardwareToColor.userData.colorGreen = color["green"];
-        hardwareToColor.userData.colorBlue = color["blue"];
-        hardwareToColor.userData.highlightable = highlightable;
-        hardwareToColor.userData.highlightRed = highlightColor["red"];
-        hardwareToColor.userData.highlightGreen = highlightColor["green"];
-        hardwareToColor.userData.highlightBlue = highlightColor["blue"];
-    }
-}
-function colorEmpty(rackChosen, emptyId) {
-    var color;
-    var emptyToColor;
-    color = { "red": 0.0, "green": 0.0, "blue": 0.0 };
-    color["red"] = defaultColorUnselectedRack["red"];
-    color["green"] = defaultColorUnselectedRack["green"];
-    color["blue"] = defaultColorUnselectedRack["blue"];
-    if (rackChosen) {
-        color["red"] = defaultColorEmpty["red"];
-        color["green"] = defaultColorEmpty["green"];
-        color["blue"] = defaultColorEmpty["blue"];
-    }
-    emptyToColor = scene.getObjectByName(emptyId);
-    if (emptyToColor) {
-        emptyToColor.material.color.setRGB(color["red"], color["green"], color["blue"]);
-    }
-}
-///////////////
-// animation //
-///////////////
-/**
- * @function animate
- * @description the animation loop
- */
+
 function animate() {
     var closestDistance;
     var colorBlue;
@@ -284,8 +86,6 @@ function animate() {
     if (controlsEnabled) {
         var time = performance.now();
         var delta = (time - prevTime);
-        // @ts-ignore
-        //document.getElementById("fps").innerText = "FPS: " + Math.floor(1000 / delta);
         if (speedBoost) {
             delta = delta * 5 / 1000;
         }
@@ -320,11 +120,8 @@ function animationFindLineOfSight() {
     var closest;
     var closestDistance;
     var intersects;
-    // @ts-ignore
     var raycaster = new THREE.Raycaster();
-    // @ts-ignore
     cameraPostion = new THREE.Vector3();
-    // @ts-ignore
     cameraDirection = new THREE.Vector3();
     closestDistance = -1;
     camera.getWorldPosition(cameraPostion);
@@ -350,7 +147,7 @@ function animationFindLineOfSight() {
         closestDistance: closestDistance
     });
 }
-function checkForPointerLock() {
+function start() {
     var havePointerLock;
     havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
     if (havePointerLock) {
@@ -358,7 +155,7 @@ function checkForPointerLock() {
         document.addEventListener('mozpointerlockchange', pointerlockchange, false);
         document.addEventListener('webkitpointerlockchange', pointerlockchange, false);
         generateScene();
-        changeColor();
+        //changeColor();
         animate();
     }
     else {
@@ -376,16 +173,11 @@ function generateScene() {
     rendererResize();
 }
 function buildRacks() {
-    Object.keys(rackSysIdValid).forEach(function (rackSysid) {
-        if (rackCartesian.hasOwnProperty(rackSysid)) {
-            addCartesianRack(rackSysid);
-        }
-    });
-}
-function addCartesianRack(rackSysid) {
     var blockName;
     var blockSysid;
     var color;
+    var countRow;
+    var countRack;
     var highlightable;
     var lineColor;
     var type;
@@ -395,45 +187,37 @@ function addCartesianRack(rackSysid) {
     var ySize;
     var zCenter;
     var zSize;
-    blockName = "rack_" + rackSysid;
-    blockSysid = rackSysid;
-    color = defaultColorRack;
-    highlightable = false;
-    lineColor = { "red": 0.3, "green": 0.3, "blue": 0.3 };
-    xCenter = rackCartesian[rackSysid]["u_x_center"];
-    xSize = rackCartesian[rackSysid]["u_x_size"];
-    yCenter = rackCartesian[rackSysid]["u_y_center"];
-    ySize = rackCartesian[rackSysid]["u_y_size"];
-    zCenter = rackCartesian[rackSysid]["u_z_center"];
-    zSize = rackCartesian[rackSysid]["u_z_size"];
-    type = "rack";
-    addCuboid(blockName, blockSysid, color, highlightable, type, lineColor, xCenter, xSize, yCenter, ySize, zCenter, zSize);
-    //addRackObjects(rackSysid);
-    //addRackEmptySlots(rackSysid, rackEmpty, emptyBasic);
+    for (countRow = 0; countRow < 10; countRow++){
+        for (countRack = 0; countRack < 10; countRack++){
+            blockName = "rack_" + countRow + "+" + countRack;
+            blockSysid = "";
+            color = { "red": 1.0, "green": 1.0, "blue": 1.0 };;
+            highlightable = false;
+            lineColor = { "red": 0.3, "green": 0.3, "blue": 0.3 };
+            xCenter = (countRow * 2) + 2;  
+            xSize = 1;
+            yCenter = countRack + 2;
+            ySize = 1;
+            zCenter = 1.5;
+            zSize = 3
+            type = "rack";
+            addCuboid(blockName, blockSysid, color, highlightable, type, lineColor, xCenter, xSize, yCenter, ySize, zCenter, zSize);
+        }
+    }
 }
 function addPlane(objectData, plane) {
     var geometry;
     var material;
     var mesh;
-    // @ts-ignore
     geometry = new THREE.PlaneGeometry(plane["planeWidth"], plane["planeHeight"]);
-    // @ts-ignore
     material = new THREE.MeshStandardMaterial({ side: THREE.DoubleSide });
-    // @ts-ignore
     material.color.setRGB(objectData["colorRed"], objectData["colorGreen"], objectData["colorBlue"]);
-    // @ts-ignore
     mesh = new THREE.Mesh(geometry, material);
-    // @ts-ignore
     mesh.position.x = plane["yCenter"];
-    // @ts-ignore
     mesh.position.y = plane["zCenter"];
-    // @ts-ignore
     mesh.position.z = plane["xCenter"];
-    // @ts-ignore
     mesh.rotation.y = plane["planeZRotation"];
-    // @ts-ignore
     mesh.name = objectData["name"];
-    // @ts-ignore
     mesh.userData.ciSysId = objectData["ciSysId"];
     mesh.userData.colorRed = objectData["colorRed"];
     mesh.userData.colorGreen = objectData["colorGreen"];
@@ -444,7 +228,6 @@ function addPlane(objectData, plane) {
     mesh.userData.highlightGreen = objectData["highlightGreen"];
     mesh.userData.highlightBlue = objectData["highlightBlue"];
     mesh.userData.type = objectData["type"];
-    // @ts-ignore
     scene.add(mesh);
 }
 function addCuboid(blockName, blockSysid, color, highlightable, type, lineColor, xCenter, xSize, yCenter, ySize, zCenter, zSize) {
@@ -453,40 +236,22 @@ function addCuboid(blockName, blockSysid, color, highlightable, type, lineColor,
     var line;
     var material;
     var mesh;
-    // @ts-ignore
-    //geometry = new THREE.BoxGeometry(xSize,ySize,zSize);
     geometry = new THREE.BoxGeometry(ySize, zSize, xSize);
-    // @ts-ignore
     material = new THREE.MeshStandardMaterial();
-    // @ts-ignore
     material.color.setRGB(color["red"], color["green"], color["blue"]);
-    // @ts-ignore
     mesh = new THREE.Mesh(geometry, material);
-    // @ts-ignore
     mesh.position.x = yCenter;
-    // @ts-ignore
     mesh.position.y = zCenter;
-    // @ts-ignore
     mesh.position.z = xCenter;
-    // @ts-ignore
     mesh.name = blockName;
-    // @ts-ignore
     mesh.userData.highlightable = highlightable;
-    // @ts-ignore
     mesh.userData.sysid = blockSysid;
-    // @ts-ignore
     mesh.userData.type = type;
-    // @ts-ignore
     scene.add(mesh);
-    // @ts-ignore
     edges = new THREE.EdgesGeometry(geometry);
-    // @ts-ignore
     material = new THREE.LineBasicMaterial();
-    // @ts-ignore
     material.color.setRGB(lineColor["red"], lineColor["green"], lineColor["blue"]);
-    // @ts-ignore
     line = new THREE.LineSegments(edges, material);
-    // @ts-ignore
     mesh.add(line);
 }
 function addThreeJsContent() {
@@ -500,37 +265,23 @@ function addThreeJsContent() {
     var geometry;
     var light;
     var material;
-    // @ts-ignore
     velocity = new THREE.Vector3();
-    // @ts-ignore
     scene = new THREE.Scene();
-    // @ts-ignore
     light = new THREE.AmbientLight(0xffffff);
     scene.add(light);
-    // @ts-ignore
     camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.01, 1000);
-    // @ts-ignore
     controls = new THREE.PointerLockControls(camera, document.body);
     controls.getObject().position.set(cameraPositionX, cameraPositionY, cameraPositionZ);
     controls.getObject().rotation.set(cameraRotationX, cameraRotationY, cameraRotationZ);
     scene.add(camera);
-    // crosshair
-    // @ts-ignore
     geometry = new THREE.Geometry();
-    // @ts-ignore
     geometry.vertices.push(new THREE.Vector3(0, 0.001, -0.1));
-    // @ts-ignore
     geometry.vertices.push(new THREE.Vector3(0, -0.001, -0.1));
-    // @ts-ignore
     geometry.vertices.push(new THREE.Vector3(0.001, 0, -0.1));
-    // @ts-ignore
     geometry.vertices.push(new THREE.Vector3(-0.001, 0, -0.1));
-    // @ts-ignore
     material = new THREE.LineBasicMaterial({ color: 0x000000 });
-    // @ts-ignore
     crosshair = new THREE.LineSegments(geometry, material);
     camera.add(crosshair);
-    // @ts-ignore
     renderer = new THREE.WebGLRenderer({ antialias: true, canvas: document.getElementById('my_canvas') });
     renderer.setClearColor(0xf0f3f4);
 }
@@ -539,24 +290,13 @@ function addEventListeners() {
     document.addEventListener('keydown', onKeyDown, false);
     document.addEventListener('keyup', onKeyUp, false);
 }
-/**
- * @function pointerLockRequest
- * @description attempts to lock the mouse pointer when the page is clicked
- */
 function pointerLockRequest() {
     var element = document.body;
-    // @ts-ignore
     element.requestPointerLock = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock;
-    // @ts-ignore
     element.requestPointerLock();
 }
-/**
- * @function pointerlockchange
- * @description actions to take when the pointer is locked
- */
 function pointerlockchange() {
     var element = document.body;
-    // @ts-ignore
     if (document.pointerLockElement === element || document.mozPointerLockElement === element || document.webkitPointerLockElement === element) {
         controlsEnabled = true;
         moveForward = false;
@@ -573,10 +313,6 @@ function pointerlockchange() {
         controlsEnabled = false;
     }
 }
-/**
- * @function onKeyDown
- * @description associate actions with key presses
- */
 function onKeyDown(event) {
     switch (event.keyCode) {
         case 38: // up
@@ -604,16 +340,8 @@ function onKeyDown(event) {
         case 69: // e
             speedBoost = true;
             break;
-        case 80: // p
-            //cameraPosRot();
-            break;
     }
 }
-;
-/**
- * @function onKeyUp
- * @description  associate actions with key releases
- */
 function onKeyUp(event) {
     switch (event.keyCode) {
         case 38: // up
@@ -643,10 +371,6 @@ function onKeyUp(event) {
             break;
     }
 }
-/**
- * @function rendererResize
- * @description resizes the renderer when the page is resized
- */
 function rendererResize() {
     var canvasHeight;
     var canvasWidth;
@@ -656,31 +380,20 @@ function rendererResize() {
     var lowerHeight;
     var pagewidth;
     var pageheight;
-    var top;
-    var topHeight;
-    pagewidth = window.innerWidth;
-    pageheight = window.innerHeight;
-    canvasWidth = pagewidth - 16;
-    canvasHeight = pageheight - 16;
-    // center divs
-    // @ts-ignore
+    canvasWidth = window.innerWidth - 16;
+    canvasHeight = window.innerHeight - 16;
     divElement = document.getElementById("my_canvas");
     divElement.style.position = 'absolute';
     divElement.style.left = "0px";
     divElement.style.top = "0px";
     divElement.style.width = canvasWidth + "px";
     divElement.style.height = canvasHeight + "px";
-    // @ts-ignore
-    //divElement = document.getElementById("loading");
     if (camera) {
         camera.aspect = canvasWidth / canvasHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(canvasWidth, canvasHeight);
     }
 }
-//}
-
-
 </script>
 </body>
 </html>
