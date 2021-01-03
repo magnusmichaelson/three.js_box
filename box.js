@@ -13,11 +13,8 @@ var objectInLineOfSightCurrent;
 var prevTime;
 var renderer;
 var scene;
-var speed = 6;
-var speedBoost = false;
 var velocity;
 rendererResize();
-window.addEventListener("resize", rendererResize, false);
 start();
 function start() {
     var havePointerLock;
@@ -40,6 +37,7 @@ function generateScene() {
     rendererResize();
 }
 function addEventListeners() {
+    window.addEventListener("resize", rendererResize, false);
     document.getElementById('my_canvas').addEventListener('click', pointerLockRequest, false);
     document.addEventListener('keydown', onKeyDown, false);
     document.addEventListener('keyup', onKeyUp, false);
@@ -129,30 +127,24 @@ function animate() {
     objectInLineOfSightCurrent = lineOfSightResult["closest"];
     if (controlsEnabled) {
         var time = performance.now();
-        var delta = (time - prevTime);
-        if (speedBoost) {
-            delta = delta * 5 / 1000;
-        }
-        else {
-            delta = delta / 1000;
-        }
+        var delta = (time - prevTime) / 200;
         velocity.x = 0;
         velocity.z = 0;
         if (moveForward)
-            velocity.z = -speed * delta;
+            velocity.z = delta * -1;
         if (moveBackward)
-            velocity.z = speed * delta;
+            velocity.z = delta;
         if (moveLeft)
-            velocity.x = -speed * delta;
+            velocity.x = delta * -1;
         if (moveRight)
-            velocity.x = speed * delta;
+            velocity.x = delta;
         controls.getObject().translateX(velocity.x);
         controls.getObject().translateZ(velocity.z);
         if (moveDown) {
-            controls.getObject().position.y -= (speed * delta);
+            controls.getObject().position.y -= (delta);
         }
         if (moveUp) {
-            controls.getObject().position.y += (speed * delta);
+            controls.getObject().position.y += (delta);
         }
         prevTime = time;
     }
@@ -215,9 +207,6 @@ function onKeyDown(event) {
         case 32: // space
             moveUp = true;
             break;
-        case 69: // e
-            speedBoost = true;
-            break;
     }
 }
 function onKeyUp(event) {
@@ -243,9 +232,6 @@ function onKeyUp(event) {
             break;
         case 32: // space
             moveUp = false;
-            break;
-        case 69: // e
-            speedBoost = false;
             break;
     }
 }
