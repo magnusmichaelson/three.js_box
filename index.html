@@ -5,7 +5,11 @@
 <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 </head>
 <body>
- <canvas id="my_canvas" width="800" height="400"></canvas>
+    <canvas id="my_canvas" width="800" height="400"></canvas>
+<script type="module">
+    import * as THREE from './three.module.js';
+    import { PointerLockControls } from './pointerLockControls.js';
+</script>
 <script type="module" src="./box.js"></script>
 </body>
 </html>
