@@ -13,7 +13,6 @@ var objectInLineOfSightCurrent;
 var prevTime;
 var renderer;
 var scene;
-var velocity;
 rendererResize();
 start();
 function start() {
@@ -53,7 +52,6 @@ function addThreeJsContent() {
     var geometry;
     var light;
     var material;
-    velocity = new THREE.Vector3();
     scene = new THREE.Scene();
     light = new THREE.AmbientLight(0xffffff);
     scene.add(light);
@@ -121,6 +119,8 @@ function rendererResize() {
 function animate() {
     var closestDistance;
     var lineOfSightResult;
+    var velocity;
+    velocity = new THREE.Vector3();
     requestAnimationFrame(animate);
     lineOfSightResult = animationFindLineOfSight();
     closestDistance = lineOfSightResult["closestDistance"];
@@ -235,11 +235,6 @@ function onKeyUp(event) {
             break;
     }
 }
-
-
-
-
-
 function mouseClick(event) {
     if (event.button == 0) {
         console.log(objectInLineOfSightCurrent);
