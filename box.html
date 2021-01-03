@@ -1,26 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>datacenterVR</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-<style>
-</style>
 </head>
 <body>
-    <script src="./dependencies/three.min.js"></script>
-    <script src="./dependencies/PointerLockControls.js"></script>
-
-
-    <div id = "main">
-            <canvas id="my_canvas" width="800" height="400"></canvas>
-    </div>
-
-
+ <canvas id="my_canvas" width="800" height="400"></canvas>
+<script src="./dependencies/three.min.js"></script>
+<script src="./dependencies/PointerLockControls.js"></script>
 <script src="./testData.js"></script>
 <script>
 
-"use strict";
 //function main(spUtil){
 // global variables
 var camera;
@@ -68,84 +58,25 @@ var defaultColorHardware = { "red": 0.8, "green": 0.8, "blue": 0.8 };
 var defaultColorRack = { "red": 1.0, "green": 1.0, "blue": 1.0 };
 rendererResize();
 // @ts-ignore
-//document.getElementById("loading").style.display = "block";
 window.addEventListener("resize", rendererResize, false);
-//
-//
-//
-//
-if (false) {
-    // @ts-ignore
-    serverLink = this;
-    // @ts-ignore
-    if (serverLink.data.roomSysid == null) {
-        noRoomSysidGiven();
-    }
-    else {
-        // @ts-ignore
-        serverLink.data.generatingRoom = true;
-        // @ts-ignore
-        serverLink.server.update().then(function () {
-            // @ts-ignore
-            serverLink.data.generatingRoom = false;
-            // @ts-ignore
-            ciColor = serverLink.data.ciColor;
-            // @ts-ignore
-            ciComment = serverLink.data.ciComment;
-            // @ts-ignore
-            emptyBasic = serverLink.data.emptyBasic;
-            // @ts-ignore
-            emptyToRack = serverLink.data.emptyToRack;
-            // @ts-ignore
-            hardwareBasic = serverLink.data.hardwareBasic;
-            // @ts-ignore
-            hardwareError = serverLink.data.hardwareError;
-            // @ts-ignore
-            rackBasic = serverLink.data.rackBasic;
-            // @ts-ignore
-            rackCartesian = serverLink.data.rackCartesian;
-            // @ts-ignore
-            rackColor = serverLink.data.rackColor;
-            // @ts-ignore
-            rackComment = serverLink.data.rackComment;
-            // @ts-ignore
-            rackDesign = serverLink.data.rackDesign;
-            // @ts-ignore
-            rackEmpty = serverLink.data.rackEmpty;
-            // @ts-ignore
-            rackHardware = serverLink.data.rackHardware;
-            // @ts-ignore
-            rackSysIdValid = serverLink.data.rackSysIdValid;
-            // @ts-ignore
-            roomName = serverLink.data.roomName;
-            // @ts-ignore
-            roomSysid = serverLink.data.roomSysid;
-            checkForPointerLock();
-        });
-    }
-}
-else {
-    // fakeData() is stored in testData.js
-    // @ts-ignore
-    var allData = fakeData();
-    ciColor = allData["ciColor"];
-    ciComment = allData["ciComment"];
-    emptyBasic = allData["emptyBasic"];
-    emptyToRack = allData["emptyToRack"];
-    hardwareBasic = allData["hardwareBasic"];
-    hardwareError = allData["hardwareError"];
-    rackBasic = allData["rackBasic"];
-    rackCartesian = allData["rackCartesian"];
-    rackColor = allData["rackColor"];
-    rackComment = allData["rackComment"];
-    rackDesign = allData["rackDesign"];
-    rackEmpty = allData["rackEmpty"];
-    rackHardware = allData["rackHardware"];
-    rackSysIdValid = allData["rackSysIdValid"];
-    roomName = allData["roomName"];
-    roomSysid = allData["roomSysid"];
-    checkForPointerLock();
-}
+var allData = fakeData();
+ciColor = allData["ciColor"];
+ciComment = allData["ciComment"];
+emptyBasic = allData["emptyBasic"];
+emptyToRack = allData["emptyToRack"];
+hardwareBasic = allData["hardwareBasic"];
+hardwareError = allData["hardwareError"];
+rackBasic = allData["rackBasic"];
+rackCartesian = allData["rackCartesian"];
+rackColor = allData["rackColor"];
+rackComment = allData["rackComment"];
+rackDesign = allData["rackDesign"];
+rackEmpty = allData["rackEmpty"];
+rackHardware = allData["rackHardware"];
+rackSysIdValid = allData["rackSysIdValid"];
+roomName = allData["roomName"];
+roomSysid = allData["roomSysid"];
+checkForPointerLock();
 ///////////
 // menus //
 ///////////
@@ -160,284 +91,18 @@ function mouseClick(event) {
         mouseRightClick();
     }
 }
-function onScreenMenuStart() {
-    var ghost;
-    ghost = document.getElementById("ghost");
-    if (ghost) {
-        ghost.removeEventListener('click', pointerLockRequest, false);
-    }
-    // @ts-ignore
-    document.exitPointerLock();
-}
-function onScreeMenuStop() {
-    var ghost;
-    ghost = document.getElementById("ghost");
-    if (ghost) {
-        while (ghost.firstChild) {
-            ghost.removeChild(ghost.firstChild);
-        }
-        ghost.addEventListener('click', pointerLockRequest, false);
-    }
-}
 function mouseLeftClick() {
-    var hardwareSysId;
-    var lowerDiv;
-    var name;
-    var rackSysid;
-    if (objectInLineOfSightCurrent.hasOwnProperty("userData")) {
-        if (objectInLineOfSightCurrent["userData"].hasOwnProperty("type")) {
-            if (objectInLineOfSightCurrent["userData"]["type"] == "alm_hardware") {
-                hardwareSysId = objectInLineOfSightCurrent["userData"]["hardwareSysId"];
-                if (hardwareSysId) {
-                    if (hardwareBasic.hasOwnProperty(hardwareSysId)) {
-                        // @ts-ignore
-                        lowerDiv = document.getElementById("lower");
-                        lowerDiv.innerHTML = "";
-                        lowerDiv.innerHTML += "Hardware: ";
-                        name = hardwareBasic[hardwareSysId]["name"];
-                        if (name) {
-                            lowerDiv.innerHTML += name;
-                        }
-                        else {
-                            lowerDiv.innerHTML += "CI is missing";
-                        }
-                    }
-                }
-            }
-            if (objectInLineOfSightCurrent["userData"]["type"] == "u_patch_panel") {
-                hardwareSysId = objectInLineOfSightCurrent["userData"]["hardwareSysId"];
-                if (hardwareSysId) {
-                    if (hardwareBasic.hasOwnProperty(hardwareSysId)) {
-                        // @ts-ignore
-                        lowerDiv = document.getElementById("lower");
-                        lowerDiv.innerHTML = "";
-                        lowerDiv.innerHTML += "Hardware: ";
-                        lowerDiv.innerHTML += hardwareBasic[hardwareSysId]["name"];
-                    }
-                }
-            }
-            if (objectInLineOfSightCurrent["userData"]["type"] == "rack") {
-                rackSysid = objectInLineOfSightCurrent["userData"]["sysid"];
-                if (rackSysid) {
-                    if (rackBasic.hasOwnProperty(rackSysid)) {
-                        // @ts-ignore
-                        lowerDiv = document.getElementById("lower");
-                        lowerDiv.innerHTML = "";
-                        lowerDiv.innerHTML += "Rack: ";
-                        lowerDiv.innerHTML += rackBasic[rackSysid]["name"];
-                    }
-                }
-            }
-        }
-    }
+    console.log(objectInLineOfSightCurrent);
 }
 function mouseMiddleClick() {
+    console.log(objectInLineOfSightCurrent);
 }
 function mouseRightClick() {
-    var blockType;
-    var button;
-    var htmlElement;
-    // function to add buttons
-    var addButton = function (title, id, className) {
-        htmlElement = document.getElementById('ghost');
-        if (htmlElement) {
-            button = document.createElement("BUTTON");
-            button.id = id;
-            button.className = className;
-            button.innerHTML = title;
-            htmlElement.appendChild(button);
-        }
-    };
-    blockType = objectInLineOfSightCurrent.userData.type;
-    // open rack view
-    if (blockType) {
-        addButton('Open Rack Visualization', 'menuOpenRackViz', 'btn-group-green');
-        htmlElement = document.getElementById('menuOpenRackViz');
-        if (htmlElement) {
-            htmlElement.addEventListener('click', menuOpenRackViz, false);
-        }
-    }
-    else {
-        addButton('Open Rack Visualization', 'menuOpenRackViz', 'btn-group-grey');
-    }
-    // open servicenow page
-    if (blockType == "rack" || blockType == "alm_hardware" || blockType == "u_patch_panel") {
-        addButton('Open in ServiceNow', 'menuOpenServiceNow', 'btn-group-green');
-        htmlElement = document.getElementById('menuOpenServiceNow');
-        if (htmlElement) {
-            htmlElement.addEventListener('click', menuOpenServiceNow, false);
-        }
-    }
-    else {
-        addButton('Open in ServiceNow', 'openServiceNow', 'btn-group-grey');
-    }
-    // nuke
-    addButton('Nuke', 'nuke', 'btn-group-green');
-    htmlElement = document.getElementById('nuke');
-    if (htmlElement) {
-        htmlElement.addEventListener('click', function () {
-            scene.remove(objectInLineOfSightCurrent);
-            onScreeMenuStop();
-        }, false);
-    }
-    // cancel
-    addButton('Cancel', 'cancel', 'btn-group-green');
-    htmlElement = document.getElementById('cancel');
-    if (htmlElement) {
-        htmlElement.addEventListener('click', onScreeMenuStop, false);
-    }
-    onScreenMenuStart();
-}
-function menuOpenRackViz() {
-    var hardwareSysId;
-    var rackSysId;
-    rackSysId = "";
-    if (objectInLineOfSightCurrent.userData.type == "alm_hardware") {
-        hardwareSysId = objectInLineOfSightCurrent.userData.hardwareSysId;
-        rackSysId = hardwareBasic[hardwareSysId]["rack_sysid"];
-    }
-    if (objectInLineOfSightCurrent.userData.type == "u_patch_panel") {
-        hardwareSysId = objectInLineOfSightCurrent.userData.hardwareSysId;
-        rackSysId = hardwareBasic[hardwareSysId]["rack_sysid"];
-    }
-    if (objectInLineOfSightCurrent.userData.type == "rack") {
-        rackSysId = objectInLineOfSightCurrent.userData.sysid;
-    }
-    if (objectInLineOfSightCurrent.userData.type == "empty") {
-        rackSysId = emptyToRack[objectInLineOfSightCurrent.name];
-    }
-    if (rackSysId) {
-        window.open("nav_to.do?uri=%2Fsp%3Fid%3Ddcscapeng_rackview%26rackSysid%3D" + rackSysId);
-    }
-    onScreeMenuStop();
-}
-function menuOpenServiceNow() {
-    var hardwareSysId;
-    var rackSysId;
-    rackSysId = "";
-    if (objectInLineOfSightCurrent.userData.type == "alm_hardware") {
-        hardwareSysId = objectInLineOfSightCurrent.userData.hardwareSysId;
-        window.open("nav_to.do?uri=%2Falm_hardware.do%3Fsys_id%3D" + hardwareSysId);
-    }
-    if (objectInLineOfSightCurrent.userData.type == "u_patch_panel") {
-        hardwareSysId = objectInLineOfSightCurrent.userData.hardwareSysId;
-        window.open("nav_to.do?uri=%2Fu_patch_panel.do%3Fsys_id%3D" + hardwareSysId);
-    }
-    if (objectInLineOfSightCurrent.userData.type == "rack") {
-        rackSysId = objectInLineOfSightCurrent.userData.sysid;
-        window.open("nav_to.do?uri=%2Fcmdb_ci_rack.do%3Fsys_id%3D" + rackSysId);
-    }
-    onScreeMenuStop();
-}
-function subMenuDownloadBlocks() {
-    /*
-    var button: HTMLElement;
-    var htmlElement: HTMLElement | null;
-    var ghost: HTMLElement | null;
-    // clear main menu
-    ghost = document.getElementById("ghost");
-    if (ghost){
-        while (ghost.firstChild) {
-            ghost.removeChild(ghost.firstChild);
-        }
-        var addButton: any = function(title: string,id: string,className: string){
-        htmlElement = document.getElementById('ghost');
-        if (htmlElement){
-            button = document.createElement("BUTTON");
-            button.id = id;
-            button.className = className;
-            button.innerHTML = title;
-            htmlElement.appendChild(button);
-        }
-        }
-        addButton('Download scene blocks','downloadSceneBlocks','btn-group-green');
-        htmlElement = document.getElementById('downloadSceneBlocks')
-        if (htmlElement){
-        htmlElement.addEventListener('click', function(){
-            exportBlocks(sceneBlocks,"scene");
-            onScreeMenuStop();
-        }, false);
-        }
-        addButton('Download rack blocks','downloadRackBlocks','btn-group-green');
-        htmlElement = document.getElementById('downloadRackBlocks')
-        if (htmlElement){
-        htmlElement.addEventListener('click', function(){
-            exportBlocks(rackBlocks,"racks");
-            onScreeMenuStop();
-        }, false);
-        }
-        // cancel
-        addButton('Cancel','cancel','btn-group-green');
-        htmlElement = document.getElementById('cancel');
-        if (htmlElement){
-        htmlElement.addEventListener('click', onScreeMenuStop, false);
-        }
-    }
-    */
+    console.log(objectInLineOfSightCurrent);
 }
 ///////////////////////////
 // visualization control //
 ///////////////////////////
-function rackOverlayChange() {
-    var rackOverlayValue;
-    // @ts-ignore
-    rackOverlayValue = document.getElementById("rackOverlay").value;
-    if (rackOverlayValue == "default") {
-        turnRacksDefault();
-    }
-    if (rackOverlayValue == "yellow") {
-        turnRacksYellow();
-    }
-    if (rackOverlayValue == "green") {
-        turnRacksGreen();
-    }
-    changeColor();
-}
-function hardwareOverlay() {
-    var hardwareOverlayValue;
-    // @ts-ignore
-    hardwareOverlayValue = document.getElementById("hardwareOverlay").value;
-    if (hardwareOverlayValue == "default") {
-        turnHardwareDefault();
-    }
-    if (hardwareOverlayValue == "pink") {
-        turnHardwarePink();
-    }
-    if (hardwareOverlayValue == "blue") {
-        turnHardwareBlue();
-    }
-    changeColor();
-}
-function turnRacksDefault() {
-    Object.keys(rackSysIdValid).forEach(function (rackSysId) {
-        rackColor[rackSysId] = defaultColorRack;
-    });
-}
-function turnRacksYellow() {
-    Object.keys(rackSysIdValid).forEach(function (rackSysId) {
-        rackColor[rackSysId] = { "red": 1.0, "green": 1.0, "blue": 0.6 };
-    });
-}
-function turnRacksGreen() {
-    Object.keys(rackSysIdValid).forEach(function (rackSysId) {
-        rackColor[rackSysId] = { "red": 0.6, "green": 1.0, "blue": 0.6 };
-    });
-}
-function turnHardwareDefault() {
-    Object.keys(ciColor).forEach(function (ciSysId) {
-        ciColor[ciSysId] = defaultColorHardware;
-    });
-}
-function turnHardwarePink() {
-    Object.keys(ciColor).forEach(function (ciSysId) {
-        ciColor[ciSysId] = { "red": 1.0, "green": 0.6, "blue": 0.6 };
-    });
-}
-function turnHardwareBlue() {
-    Object.keys(ciColor).forEach(function (ciSysId) {
-        ciColor[ciSysId] = { "red": 0.6, "green": 0.6, "blue": 1.0 };
-    });
-}
 /////////////////////////////////////
 // recoloring objects in the scene //
 /////////////////////////////////////
@@ -455,22 +120,8 @@ function changeColor() {
     });
 }
 function checkrackChosen(rackSysid) {
-    //var environment;
     var rackChosen;
-    //var rackFilterValue;
     rackChosen = true;
-    /*
-    // @ts-ignore
-    rackFilterValue = document.getElementById('rackFilter').value;
-    environment = "missing";
-    if (rackDesign.hasOwnProperty(rackSysid)) {
-        environment = rackDesign[rackSysid]["u_environment"];
-    }
-    if (rackFilterValue == 'all' || rackFilterValue == environment) {
-        rackChosen = true;
-    }
-    return (rackChosen);
-    */
 }
 function colorRack(rackSysid, rackChosen) {
     var color;
@@ -592,75 +243,6 @@ function colorEmpty(rackChosen, emptyId) {
         emptyToColor.material.color.setRGB(color["red"], color["green"], color["blue"]);
     }
 }
-////////////////////////////////////
-// visualization color generation //
-////////////////////////////////////
-/**
- * @function spectrumGreenRed
- * @description take a number and returns color data from green to red
- * @param {number} decimal - the number to be converted into color
- */
-function spectrumGreenRed(numerator, denominator) {
-    var color = {
-        "red": 1,
-        "green": 1,
-        "blue": 1
-    };
-    var decimal;
-    var saturation;
-    saturation = 0.5;
-    decimal = numerator / denominator;
-    if (denominator == 0) {
-        decimal = 1;
-    }
-    // green to yellow
-    if (decimal < 0.5) {
-        color["red"] = (1 - saturation) + (decimal / 0.5 * saturation);
-        color["green"] = 1;
-        color["blue"] = (1 - saturation);
-    }
-    // yellow to red
-    if (decimal >= 0.5) {
-        color["red"] = 1;
-        color["green"] = (1 - saturation) + (saturation - ((decimal - 0.5) / 0.5) * saturation);
-        color["blue"] = (1 - saturation);
-    }
-    // max or over, hard red
-    if (decimal >= 1.0) {
-        color = {
-            "red": 1,
-            "green": 0.2,
-            "blue": 0.2
-        };
-    }
-    return (color);
-}
-/**
-     * @function spectrumBluePink
-     * @description take a number and returns color data from blue to pink
-     * @param {number} decimal - the number to be converted into color
- */
-function spectrumBluePink(numerator, denominator) {
-    var color = {
-        "red": 1,
-        "green": 1,
-        "blue": 1
-    };
-    var decimal;
-    var saturation;
-    saturation = 0.5;
-    decimal = numerator / denominator;
-    if (denominator == 0) {
-        decimal = 1;
-    }
-    if (decimal < 0.0) {
-        decimal = 0.0;
-    }
-    color["red"] = (1 - saturation) + (decimal * saturation);
-    color["green"] = (1 - saturation);
-    color["blue"] = 1;
-    return (color);
-}
 ///////////////
 // animation //
 ///////////////
@@ -768,110 +350,6 @@ function animationFindLineOfSight() {
         closestDistance: closestDistance
     });
 }
-//////////////////
-// default page //
-//////////////////
-/**
- * @function noRoomSysidGiven
- * @description gives an explanation of how a rack sys_id needs to given as a url parameter
- */
-function noRoomSysidGiven() {
-    var dropDown;
-    var optionElement;
-    var sortedNames = [];
-    var roomOptions = {};
-    // @ts-ignore
-    dropDown = document.getElementById('roomDropDown');
-    dropDown.addEventListener('change', roomFromDropdown, false);
-    // @ts-ignore
-    //document.getElementById("start").style.display = "none";
-    // @ts-ignore
-    //document.getElementById("loading").style.display = "none";
-    // @ts-ignore
-    //document.getElementById("roomSelect").style.display = "block";
-    // @ts-ignore
-    serverLink.data.getRooms = true;
-    // @ts-ignore
-    serverLink.server.update().then(function () {
-        // @ts-ignore
-        serverLink.data.getRooms = false;
-        // @ts-ignore
-        roomOptions = serverLink.data.roomOptions;
-        sortedNames = Object.keys(roomOptions);
-        sortedNames.sort();
-        sortedNames.forEach(function (roomName) {
-            optionElement = document.createElement('option');
-            optionElement.text = roomName;
-            optionElement.value = roomOptions[roomName];
-            dropDown.add(optionElement);
-        });
-    });
-}
-function roomFromDropdown() {
-    var dropDown;
-    // @ts-ignore
-    dropDown = document.getElementById("roomDropDown");
-    if (dropDown.value !== "default") {
-        window.open("nav_to.do?uri=%2Fsp%2F%3Fid%3Ddatacenter_vr%26sysid%3D" + dropDown.value);
-    }
-}
-////////////
-// set up //
-////////////
-/**
- * @function rackEnvironmentFilter
- * @description fill the environment dropdown
- */
-function rackEnvironmentFilter(rackDesign) {
-    /*
-    var optionElement;
-    var rackEnvironmentList = [];
-    var selectElement;
-    selectElement = document.getElementById('rackFilter');
-    Object.keys(rackDesign).forEach(function (rackSysid) {
-        if (rackEnvironmentList.indexOf(rackDesign[rackSysid]['u_environment']) < 0) {
-            rackEnvironmentList.push(rackDesign[rackSysid]['u_environment']);
-        }
-    });
-    rackEnvironmentList.sort();
-    rackEnvironmentList.forEach(function (group) {
-        optionElement = document.createElement('option');
-        optionElement.text = group;
-        optionElement.value = group;
-        selectElement.add(optionElement);
-    });
-    */
-}
-/**
- * @function hardwareSupportGroupFilter
- * @description fill the support group dropdown
- */
-function hardwareSupportGroupFilter(rackHardware) {
-    /*
-    var optionElement;
-    var selectElement;
-    var supportGroup;
-    var supportGroupList = [];
-    selectElement = document.getElementById('hardwareFilter');
-    Object.keys(rackHardware).forEach(function (rackSysid) {
-        rackHardware[rackSysid].forEach(function (hardwareSysid) {
-            supportGroup = hardwareBasic[hardwareSysid]['supportgroup_name'];
-            if (supportGroup != null) {
-                if (supportGroupList.indexOf(supportGroup) < 0) {
-                    supportGroupList.push(supportGroup);
-                }
-            }
-        });
-    });
-    supportGroupList.sort();
-    supportGroupList.forEach(function (group) {
-        optionElement = document.createElement('option');
-        optionElement.text = group;
-        optionElement.value = group;
-        selectElement.add(optionElement);
-    });
-    */
-}
 function checkForPointerLock() {
     var havePointerLock;
     havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
@@ -892,16 +370,8 @@ function checkForPointerLock() {
  * @description generate everything in the 3D scene
  */
 function generateScene() {
-    // @ts-ignore
-    //document.getElementById("start").style.display = "none";
-    // @ts-ignore
-    //document.getElementById("loading").style.display = "none";
-    // @ts-ignore
-    //document.getElementById("3d").style.display = "block";
     addEventListeners();
     addThreeJsContent();
-    rackEnvironmentFilter(rackDesign);
-    hardwareSupportGroupFilter(rackHardware);
     buildRacks();
     rendererResize();
 }
@@ -938,155 +408,8 @@ function addCartesianRack(rackSysid) {
     zSize = rackCartesian[rackSysid]["u_z_size"];
     type = "rack";
     addCuboid(blockName, blockSysid, color, highlightable, type, lineColor, xCenter, xSize, yCenter, ySize, zCenter, zSize);
-    addRackObjects(rackSysid);
-    addRackEmptySlots(rackSysid, rackEmpty, emptyBasic);
-}
-function addRackObjects(rackSysid) {
-    var ciSysId;
-    var highlightable;
-    var objectData;
-    var plane;
-    var planeHeight;
-    var planeWidth;
-    var planeZRotation;
-    var rackBase;
-    var unitHeight;
-    var xCenter;
-    var yCenter;
-    var zCenter;
-    unitHeight = 0.0445;
-    rackHardware[rackSysid].forEach(function (hardwareSysid) {
-        highlightable = false;
-        if (hardwareBasic[hardwareSysid].hasOwnProperty("ci_sysid")) {
-            ciSysId = hardwareBasic[hardwareSysid]["ci_sysid"];
-            if (ciSysId) {
-                if (ciColor.hasOwnProperty(ciSysId)) {
-                    highlightable = true;
-                }
-            }
-        }
-        xCenter = 0;
-        yCenter = 0;
-        zCenter = 0;
-        planeZRotation = 0;
-        if (rackCartesian[rackSysid]["u_rotation"] % 2 == 0) {
-            planeZRotation = 1.570796;
-        }
-        if (rackCartesian[rackSysid]["u_rotation"] == 0) {
-            xCenter = rackCartesian[rackSysid]["u_x_center"];
-            yCenter = rackCartesian[rackSysid]["u_y_center"] - (rackCartesian[rackSysid]["u_y_size"] * 0.5) - 0.006;
-            planeWidth = rackCartesian[rackSysid]["u_x_size"] * 0.9;
-        }
-        if (rackCartesian[rackSysid]["u_rotation"] == 1) {
-            xCenter = rackCartesian[rackSysid]["u_x_center"] + (rackCartesian[rackSysid]["u_x_size"] * 0.5) + 0.006;
-            yCenter = rackCartesian[rackSysid]["u_y_center"];
-            planeWidth = rackCartesian[rackSysid]["u_y_size"] * 0.9;
-        }
-        if (rackCartesian[rackSysid]["u_rotation"] == 2) {
-            xCenter = rackCartesian[rackSysid]["u_x_center"];
-            yCenter = rackCartesian[rackSysid]["u_y_center"] + (rackCartesian[rackSysid]["u_y_size"] * 0.5) + 0.006;
-            planeWidth = rackCartesian[rackSysid]["u_x_size"] * 0.9;
-        }
-        if (rackCartesian[rackSysid]["u_rotation"] == 3) {
-            xCenter = rackCartesian[rackSysid]["u_x_center"] - (rackCartesian[rackSysid]["u_x_size"] * 0.5) - 0.006;
-            yCenter = rackCartesian[rackSysid]["u_y_center"];
-            planeWidth = rackCartesian[rackSysid]["u_y_size"] * 0.9;
-        }
-        rackBase = rackCartesian[rackSysid]["u_z_center"] - (rackCartesian[rackSysid]["u_z_size"] / 2);
-        zCenter = rackBase + rackCartesian[rackSysid]["u_z_unit_start"] + ((hardwareBasic[hardwareSysid]["racku"] - 1) * unitHeight) + (hardwareBasic[hardwareSysid]["model_rackunits"] * unitHeight * 0.5);
-        planeHeight = (hardwareBasic[hardwareSysid]["model_rackunits"] * unitHeight) - 0.004;
-        objectData = {
-            ciSysId: ciSysId,
-            colorRed: 1,
-            colorGreen: 1,
-            colorBlue: 1,
-            hardwareSysId: hardwareSysid,
-            highlightable: highlightable,
-            highlightRed: 1,
-            highlightGreen: 1,
-            highlightBlue: 1,
-            name: "hardware_" + hardwareSysid,
-            type: hardwareBasic[hardwareSysid]["type"]
-        };
-        plane = {
-            planeHeight: planeHeight,
-            planeWidth: planeWidth,
-            planeZRotation: planeZRotation,
-            xCenter: xCenter,
-            yCenter: yCenter,
-            zCenter: zCenter
-        };
-        addPlane(objectData, plane);
-    });
-}
-function addRackEmptySlots(rackSysid, rackEmpty, emptyBasic) {
-    var objectData;
-    var plane;
-    var planeHeight;
-    var planeWidth;
-    var planeZRotation;
-    var rackBase;
-    var unitHeight;
-    var xCenter;
-    var yCenter;
-    var zCenter;
-    unitHeight = 0.0445;
-    rackEmpty[rackSysid].forEach(function (emptyName) {
-        xCenter = 0;
-        yCenter = 0;
-        zCenter = 0;
-        planeWidth = 1;
-        planeHeight = 1;
-        planeZRotation = 0;
-        if (rackCartesian[rackSysid]["u_rotation"] % 2 == 0) {
-            planeZRotation = 1.570796;
-        }
-        if (rackCartesian[rackSysid]["u_rotation"] == 0) {
-            xCenter = rackCartesian[rackSysid]["u_x_center"];
-            yCenter = rackCartesian[rackSysid]["u_y_center"] - (rackCartesian[rackSysid]["u_y_size"] * 0.5) - 0.006;
-            planeWidth = rackCartesian[rackSysid]["u_x_size"] * 0.9;
-        }
-        if (rackCartesian[rackSysid]["u_rotation"] == 1) {
-            xCenter = rackCartesian[rackSysid]["u_x_center"] + (rackCartesian[rackSysid]["u_x_size"] * 0.5) + 0.006;
-            yCenter = rackCartesian[rackSysid]["u_y_center"];
-            planeWidth = rackCartesian[rackSysid]["u_y_size"] * 0.9;
-        }
-        if (rackCartesian[rackSysid]["u_rotation"] == 2) {
-            xCenter = rackCartesian[rackSysid]["u_x_center"];
-            yCenter = rackCartesian[rackSysid]["u_y_center"] + (rackCartesian[rackSysid]["u_y_size"] * 0.5) + 0.006;
-            planeWidth = rackCartesian[rackSysid]["u_x_size"] * 0.9;
-        }
-        if (rackCartesian[rackSysid]["u_rotation"] == 3) {
-            xCenter = rackCartesian[rackSysid]["u_x_center"] - (rackCartesian[rackSysid]["u_x_size"] * 0.5) - 0.006;
-            yCenter = rackCartesian[rackSysid]["u_y_center"];
-            planeWidth = rackCartesian[rackSysid]["u_y_size"] * 0.9;
-        }
-        rackBase = rackCartesian[rackSysid]["u_z_center"] - (rackCartesian[rackSysid]["u_z_size"] / 2);
-        zCenter = rackBase + rackCartesian[rackSysid]["u_z_unit_start"] + ((emptyBasic[emptyName] - 1) * unitHeight) + (unitHeight * 0.5);
-        planeHeight = unitHeight - 0.004;
-        objectData = {
-            ciSysId: null,
-            colorRed: 1,
-            colorGreen: 1,
-            colorBlue: 1,
-            hardwareSysId: null,
-            highlightable: false,
-            highlightRed: 1,
-            highlightGreen: 1,
-            highlightBlue: 1,
-            name: emptyName,
-            type: "empty"
-        };
-        plane = {
-            planeHeight: planeHeight,
-            planeWidth: planeWidth,
-            planeZRotation: planeZRotation,
-            xCenter: xCenter,
-            yCenter: yCenter,
-            zCenter: zCenter
-        };
-        addPlane(objectData, plane);
-    });
+    //addRackObjects(rackSysid);
+    //addRackEmptySlots(rackSysid, rackEmpty, emptyBasic);
 }
 function addPlane(objectData, plane) {
     var geometry;
@@ -1212,21 +535,7 @@ function addThreeJsContent() {
     renderer.setClearColor(0xf0f3f4);
 }
 function addEventListeners() {
-    // @ts-ignore
-    //document.getElementById('rackOverlay').addEventListener('change', rackOverlayChange, false);
-    // @ts-ignore
-   //document.getElementById('rackFilter').addEventListener('change', changeColor, false);
-    // @ts-ignore
-    //document.getElementById('hardwareOverlay').addEventListener('change', hardwareOverlay, false);
-    // @ts-ignore
-    //document.getElementById('hardwareFilter').addEventListener('change', changeColor, false);
-    // @ts-ignore
-    //document.getElementById('ghost').addEventListener('click', pointerLockRequest, false);
-    // @ts-ignore
-    //document.getElementById("speed").addEventListener("change", function () {
-    //    // @ts-ignore
-    //    speed = document.getElementById("speed").value;
-    //}, false);
+    document.getElementById('my_canvas').addEventListener('click', pointerLockRequest, false);
     document.addEventListener('keydown', onKeyDown, false);
     document.addEventListener('keyup', onKeyUp, false);
 }
