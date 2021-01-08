@@ -1,0 +1,67 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width">
+  </head>
+  <body>
+      <pre id="test"></div>
+  </body>
+
+<script>
+
+var output = document.getElementById("test");
+
+var rAF = window.mozRequestAnimationFrame ||
+  window.webkitRequestAnimationFrame ||
+  window.requestAnimationFrame;
+
+var rAFStop = window.mozCancelRequestAnimationFrame ||
+  window.webkitCancelRequestAnimationFrame ||
+  window.cancelRequestAnimationFrame;
+
+window.addEventListener("gamepadconnected", function() {
+    var gp = navigator.getGamepads()[0];
+    gameLoop();
+});
+
+window.addEventListener("gamepaddisconnected", function() {
+    gamepadInfo.innerHTML = "Waiting for gamepad.";
+    rAFStop(start);
+});
+
+function gameLoop() {
+  if(navigator.webkitGetGamepads) {
+    var gp = navigator.webkitGetGamepads()[0];
+  } else {
+    var gp = navigator.getGamepads()[0];
+    output.innerHTML = "";
+    output.innerHTML += "A                      " +gp.buttons[0].value + "<br/>";
+    output.innerHTML += "B                      " +gp.buttons[1].value + "<br/>";
+    output.innerHTML += "X                      " +gp.buttons[2].value + "<br/>";
+    output.innerHTML += "Y                      " +gp.buttons[3].value + "<br/>";
+    output.innerHTML += "Left shoulder          " +gp.buttons[4].value + "<br/>";
+    output.innerHTML += "Right shoulder         " +gp.buttons[5].value + "<br/>";
+    output.innerHTML += "Left trigger           " +gp.buttons[6].value + "<br/>";
+    output.innerHTML += "Right trigger          " +gp.buttons[7].value + "<br/>";
+    output.innerHTML += "Back                   " +gp.buttons[8].value + "<br/>";
+    output.innerHTML += "Start                  " +gp.buttons[9].value + "<br/>";
+    output.innerHTML += "Left joystick press    " +gp.buttons[10].value + "<br/>";
+    output.innerHTML += "Right joystick press   " +gp.buttons[11].value + "<br/>";
+    output.innerHTML += "Dpad Up                " +gp.buttons[12].value + "<br/>";
+    output.innerHTML += "Dpad Down              " +gp.buttons[13].value + "<br/>";
+    output.innerHTML += "Dpad Left              " +gp.buttons[14].value + "<br/>";
+    output.innerHTML += "Dped Right             " +gp.buttons[15].value + "<br/>";
+    output.innerHTML += "Silver button          " +gp.buttons[16].value + "<br/>";
+    output.innerHTML += "Left stick horizontal  " +gp.axes[0] + "<br/>";
+    output.innerHTML += "Left stick vertical    " +gp.axes[1] + "<br/>";
+    output.innerHTML += "Right stick horizontal " +gp.axes[2] + "<br/>";
+    output.innerHTML += "Left stick vertical    " +gp.axes[3] + "<br/>";
+  }
+  var start = rAF(gameLoop);
+};
+
+</script>
+</html>
