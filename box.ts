@@ -41,6 +41,12 @@ function addEventListeners() {
     document.getElementById('my_canvas').addEventListener('click', pointerLockRequest, false);
     document.addEventListener('keydown', onKeyDown, false);
     document.addEventListener('keyup', onKeyUp, false);
+    window.addEventListener("gamepadconnected", function(e) {
+        console.log("Gamepad connected");
+    });
+    window.addEventListener("gamepaddisconnected", function(e) {
+        console.log("Gamepad disconnected");
+    });
 }
 function addThreeJsContent() {
     var crosshair: any;
