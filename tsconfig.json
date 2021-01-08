@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "strict": true,
+        "noImplicitAny": true,
+        "allowJs": true
+    },
+    "files" : [
+        "box.ts"
+    ],
+    "exclude": [
+        "./three.module.js",
+        "./pointerLockControls.js"
+    ]
+}
