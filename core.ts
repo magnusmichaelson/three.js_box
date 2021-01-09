@@ -63,9 +63,9 @@ function addThreeJsContent() {
     camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.01, 1000);
     // @ts-ignore
     controls = new PointerLockControls( camera, document.body );
-    controls.getObject().position.set(-4.0, 1.9, -4.0);
+    controls.getObject().position.set(-4.0, 1.8, -4.0);
     controls.getObject().rotation.order = "YXZ";
-    controls.getObject().rotation.set(0.004, -2.354, 0.0);
+    controls.getObject().rotation.set(0.0, -2.356194525, 0.0);
     scene.add(camera);
     // @ts-ignore
     geometry = new THREE.Geometry();
@@ -103,9 +103,9 @@ function buildRacks() {
             material.color.setRGB(1, 1, 1);
             // @ts-ignore
             mesh = new THREE.Mesh(geometry, material);
-            mesh.position.x = countRack + 2;;
+            mesh.position.x = 0.5 + countRack;
             mesh.position.y = 1.5;
-            mesh.position.z = (countRow * 2) + 2;
+            mesh.position.z = 0.5 + (countRow * 2);
             mesh.name = "rack_" + countRow + "+" + countRack;
             scene.add(mesh);
             // @ts-ignore
