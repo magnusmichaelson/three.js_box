@@ -2,7 +2,6 @@
 //import { PointerLockControls } from './pointerLockControls.js';
 var camera: any;
 var controls: any;
-var controlsEnabled: boolean = false;
 var moveForward: boolean = false;
 var moveBackward: boolean = false;
 var moveLeft: boolean = false;
@@ -10,6 +9,7 @@ var moveRight: boolean = false;
 var moveUp: boolean = false;
 var moveDown: boolean = false;
 var objectInLineOfSightCurrent: any;
+var pointerLockEnabled: boolean = false;
 var prevTime: number;
 var renderer: any;
 var scene: any;
@@ -149,7 +149,8 @@ function animate() {
     lineOfSightResult = animationFindLineOfSight();
     closestDistance = lineOfSightResult["closestDistance"];
     objectInLineOfSightCurrent = lineOfSightResult["closest"];
-    if (controlsEnabled) {
+    //if (pointerLockEnabled) {
+    if (controls.isLocked) {
         time = performance.now();
         delta = (time - prevTime) / 200;
         velocity.x = 0;
@@ -282,7 +283,7 @@ function pointerlockchange() {
     var element: HTMLElement = document.body;
     // @ts-ignore
     if (document.pointerLockElement === element || document.mozPointerLockElement === element || document.webkitPointerLockElement === element) {
-        controlsEnabled = true;
+        pointerLockEnabled = true;
         moveForward = false;
         moveBackward = false;
         moveLeft = false;
@@ -294,6 +295,6 @@ function pointerlockchange() {
     }
     else {
         document.removeEventListener('click', mouseClick, false);
-        controlsEnabled = false;
+        pointerLockEnabled = false;
     }
 }

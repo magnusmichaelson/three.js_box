@@ -1,8 +1,8 @@
-import * as THREE from './three.module.js';
-import { PointerLockControls } from './pointerLockControls.js';
+"use strict";
+//import * as THREE from './three.module.js';
+//import { PointerLockControls } from './pointerLockControls.js';
 var camera;
 var controls;
-var controlsEnabled = false;
 var moveForward = false;
 var moveBackward = false;
 var moveLeft = false;
@@ -10,6 +10,7 @@ var moveRight = false;
 var moveUp = false;
 var moveDown = false;
 var objectInLineOfSightCurrent;
+var pointerLockEnabled = false;
 var prevTime;
 var renderer;
 var scene;
@@ -150,7 +151,8 @@ function animate() {
     lineOfSightResult = animationFindLineOfSight();
     closestDistance = lineOfSightResult["closestDistance"];
     objectInLineOfSightCurrent = lineOfSightResult["closest"];
-    if (controlsEnabled) {
+    //if (pointerLockEnabled) {
+    if (controls.isLocked) {
         time = performance.now();
         delta = (time - prevTime) / 200;
         velocity.x = 0;
@@ -283,7 +285,7 @@ function pointerlockchange() {
     var element = document.body;
     // @ts-ignore
     if (document.pointerLockElement === element || document.mozPointerLockElement === element || document.webkitPointerLockElement === element) {
-        controlsEnabled = true;
+        pointerLockEnabled = true;
         moveForward = false;
         moveBackward = false;
         moveLeft = false;
@@ -295,6 +297,6 @@ function pointerlockchange() {
     }
     else {
         document.removeEventListener('click', mouseClick, false);
-        controlsEnabled = false;
+        pointerLockEnabled = false;
     }
 }
