@@ -64,7 +64,8 @@ function addThreeJsContent() {
     // @ts-ignore
     controls = new PointerLockControls( camera, document.body );
     controls.getObject().position.set(-4.0, 1.9, -4.0);
-    controls.getObject().rotation.set(3.141, -0.785, 3.141);
+    controls.getObject().rotation.order = "YXZ";
+    controls.getObject().rotation.set(0.004, -2.354, 0.0);
     scene.add(camera);
     // @ts-ignore
     geometry = new THREE.Geometry();
@@ -167,9 +168,12 @@ function animate() {
         controls.getObject().translateZ(velocity.z);
         controls.getObject().position.y -= (delta * gp.buttons[6].value);
         controls.getObject().position.y += (delta * gp.buttons[7].value);
-        controls.getObject().rotation.z += gp.axes[3] * delta;
-        controls.getObject().rotation.y += gp.axes[2] * delta;
-        controls.getObject().rotation.set(gp.axes[3], gp.axes[2], 3.141);
+        controls.getObject().rotation.x += gp.axes[3] * delta * -0.1;
+        controls.getObject().rotation.y += gp.axes[2] * delta * -1;
+        console.clear(); 
+        console.log("rotation x = " + controls.getObject().rotation.x);
+        console.log("rotation y = " + controls.getObject().rotation.y);
+        console.log("rotation z = " + controls.getObject().rotation.z);
         /*
         // A                       - gp.buttons[0].value
         // B                       - gp.buttons[1].value
