@@ -3,6 +3,7 @@
 //import { PointerLockControls } from './pointerLockControls.js';
 var camera;
 var controls;
+var controllerEnabled;
 var moveForward = false;
 var moveBackward = false;
 var moveLeft = false;
@@ -10,7 +11,6 @@ var moveRight = false;
 var moveUp = false;
 var moveDown = false;
 var objectInLineOfSightCurrent;
-var pointerLockEnabled = false;
 var prevTime;
 var renderer;
 var scene;
@@ -42,11 +42,11 @@ function addEventListeners() {
     document.getElementById('my_canvas').addEventListener('click', pointerLockRequest, false);
     document.addEventListener('keydown', onKeyDown, false);
     document.addEventListener('keyup', onKeyUp, false);
-    window.addEventListener("gamepadconnected", function (e) {
-        console.log("Gamepad connected");
+    window.addEventListener("gamepadconnected", function () {
+        controllerEnabled = true;
     });
-    window.addEventListener("gamepaddisconnected", function (e) {
-        console.log("Gamepad disconnected");
+    window.addEventListener("gamepaddisconnected", function () {
+        controllerEnabled = false;
     });
 }
 function addThreeJsContent() {
@@ -145,26 +145,70 @@ function animate() {
     var velocity;
     var time;
     var delta;
+    var gp;
     // @ts-ignore
     velocity = new THREE.Vector3();
     requestAnimationFrame(animate);
     lineOfSightResult = animationFindLineOfSight();
     closestDistance = lineOfSightResult["closestDistance"];
     objectInLineOfSightCurrent = lineOfSightResult["closest"];
-    //if (pointerLockEnabled) {
+    // time
+    time = performance.now();
+    delta = (time - prevTime) / 200;
+    prevTime = time;
+    //
+    velocity.x = 0;
+    velocity.z = 0;
+    // xbox 360 controller
+    if (controllerEnabled) {
+        // @ts-ignore
+        gp = navigator.getGamepads()[0];
+        velocity.z = delta * gp.axes[1];
+        velocity.x = delta * gp.axes[0];
+        controls.getObject().translateX(velocity.x);
+        controls.getObject().translateZ(velocity.z);
+        controls.getObject().position.y -= (delta * gp.buttons[6].value);
+        controls.getObject().position.y += (delta * gp.buttons[7].value);
+        controls.getObject().rotation.z += gp.axes[3] * delta;
+        controls.getObject().rotation.y += gp.axes[2] * delta;
+        controls.getObject().rotation.set(gp.axes[3], gp.axes[2], 3.141);
+        /*
+        // A                       - gp.buttons[0].value
+        // B                       - gp.buttons[1].value
+        // X                       - gp.buttons[2].value
+        // Y                       - gp.buttons[3].value
+        // Left shoulder           - gp.buttons[4].value
+        // Right shoulder          - gp.buttons[5].value
+        // Left trigger            - gp.buttons[6].value
+        // Right trigger           - gp.buttons[7].value
+        // Back                    - gp.buttons[8].value
+        // Start                   - gp.buttons[9].value
+        // Left joystick press     - gp.buttons[10].value
+        // Right joystick press    - gp.buttons[11].value
+        // Dpad Up                 - gp.buttons[12].value
+        // Dpad Down               - gp.buttons[13].value
+        // Dpad Left               - gp.buttons[14].value
+        // Dped Right              - gp.buttons[15].value
+        // Silver button           - gp.buttons[16].value
+        // Left stick horizontal   - gp.axes[0]
+        // Left stick vertical     - gp.axes[1]
+        // Right stick horizontal  - gp.axes[2]
+        // Right stick vertical    - gp.axes[3]
+        */
+    }
     if (controls.isLocked) {
-        time = performance.now();
-        delta = (time - prevTime) / 200;
-        velocity.x = 0;
-        velocity.z = 0;
-        if (moveForward)
+        if (moveForward) {
             velocity.z = delta * -1;
-        if (moveBackward)
+        }
+        if (moveBackward) {
             velocity.z = delta;
-        if (moveLeft)
+        }
+        if (moveLeft) {
             velocity.x = delta * -1;
-        if (moveRight)
+        }
+        if (moveRight) {
             velocity.x = delta;
+        }
         controls.getObject().translateX(velocity.x);
         controls.getObject().translateZ(velocity.z);
         if (moveDown) {
@@ -173,7 +217,6 @@ function animate() {
         if (moveUp) {
             controls.getObject().position.y += (delta);
         }
-        prevTime = time;
     }
     renderer.render(scene, camera);
 }
@@ -285,7 +328,6 @@ function pointerlockchange() {
     var element = document.body;
     // @ts-ignore
     if (document.pointerLockElement === element || document.mozPointerLockElement === element || document.webkitPointerLockElement === element) {
-        pointerLockEnabled = true;
         moveForward = false;
         moveBackward = false;
         moveLeft = false;
@@ -297,6 +339,5 @@ function pointerlockchange() {
     }
     else {
         document.removeEventListener('click', mouseClick, false);
-        pointerLockEnabled = false;
     }
 }
