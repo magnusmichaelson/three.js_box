@@ -170,10 +170,6 @@ function animate() {
         controls.getObject().position.y += (delta * gp.buttons[7].value);
         controls.getObject().rotation.x += gp.axes[3] * delta * -0.5;
         controls.getObject().rotation.y += gp.axes[2] * delta * -0.5;
-        console.clear(); 
-        console.log("rotation x = " + controls.getObject().rotation.x);
-        console.log("rotation y = " + controls.getObject().rotation.y);
-        console.log("rotation z = " + controls.getObject().rotation.z);
         /*
         // A                       - gp.buttons[0].value
         // B                       - gp.buttons[1].value
