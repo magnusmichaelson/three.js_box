@@ -6,7 +6,7 @@
         "allowJs": true
     },
     "files" : [
-        "box.ts"
+        "core.ts"
     ],
     "exclude": [
         "./three.module.js",
